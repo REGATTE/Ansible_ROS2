@@ -1,0 +1,15 @@
+- name: Install ROS2
+  include: ros2_install.yml
+  tags: ros2_install
+
+- name: Install ROS2 Dev tools
+  include: ros2_dev_tools.yml
+  tags: ros2_dev_tools
+
+- name: Create workspace
+  include: create_ros2_ws.yml
+  tags: create_Ws
+
+- name: Install ROS2 pkg
+  include: ros2_pkg_install.yml
+  tags: Install 3rd party packages

@@ -1,0 +1,56 @@
+---
+- name: "Check ROS2 compatibilty with current OS"
+  assert:
+    that:
+      - install_ros2_distro == "{{ item.ros2_distro }}"
+    fail_msg: "{{ ansible_distribution }} {{ ansible_distribution_version }} {{ ansible_distribution_release }} does NOT support ROS {{ install_ros2_distro }}"
+  when: ansible_distribution_release == item.os_release
+  with_items:
+    - { os_release: "bionic", ros2_distro: "dashing" }          #18.04
+    - { os_release: "focal", ros2_distro: "foxy" }              #20.04
+    - { os_release: "jammy", ros2_distro: "humble"}             #22.04
+
+# sudo apt update && sudo apt install curl gnupg2 lsb-release
+- name: Install dependencies for setting up sources
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+  vars:
+    packages:
+    - curl
+    - gnupg2
+    - lsb-release
+
+# curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+- name: Setup ROS2 keys
+  apt_key:
+    url: "{{ ros2_gpg_key_url }}"
+    state: present
+
+# sudo sh -c 'echo "deb [arch=amd64,arm64] http://packages.ros.org/ros2/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list'
+- name: Setup ROS2 sources
+  apt_repository:
+    repo: "deb {{ ros2_repository_url }} {{ ansible_distribution_release }} main"
+    state: present
+    filename: ros2-latest
+
+# sudo apt install ros-<distro>
+- name: Install ROS2
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+  vars:
+    packages:
+      - "{{ 'ros-' + ros_distro + '-' + ros_distro_config }}"
+
+# echo "source /opt/ros/<distro>/setup.bash" >> ~/.bashrc
+- name: Update .bashrc with /opt/ros/<ros_distribution>/setup.bash
+  lineinfile:
+    path: /home/{{ ros2_user.name }}/.bashrc
+    line: source /opt/ros/{{ ros2_distribution }}/setup.bash
+
+# sudo apt install python3-argcomplete
+- name: Install argcomplete (optional)
+  apt:
+    name: python3-argcomplete
+  when: install_argcomplete

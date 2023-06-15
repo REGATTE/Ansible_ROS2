@@ -1,0 +1,14 @@
+ros_distro: humble
+ros_distro_config: desktop
+dev_ws: ros2_ws
+install_argcomplete: true
+
+ros2_packages:
+
+ros2_gpg_key_url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc
+ros2_repository_url: http://packages.ros.org/ros2/ubuntu
+
+# Default username and group for catkin_ws installation
+ros2_user:
+    name: ubuntu
+    group: ubuntu

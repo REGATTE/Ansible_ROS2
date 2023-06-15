@@ -1,0 +1,20 @@
+galazy_info:
+  role_name: install_ros2
+  author: regatte
+  description: An Ansible Role that installs ROS 2
+
+  min_ansible_version: 2.9
+
+  license: MIT
+
+  platforms:
+  - name: Ubuntu
+    versions: 
+      - jammy
+      - bionic
+      - focal
+
+  galaxy_tags:
+    - ubuntu
+    - install
+    - ros2
